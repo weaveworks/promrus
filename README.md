@@ -33,6 +33,12 @@ if err != nil {
 }
 ```
 
+## Setup development environment
+```
+$ go get github.com/golang/dep/cmd/dep
+$ dep ensure
+```
+
 ## Compile
 ```
 $ go build
