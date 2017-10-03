@@ -9,7 +9,7 @@
 		<img src="https://img.shields.io/coveralls/marccarre/promrus.svg"/>
 	</a>
 	<a href="https://goreportcard.com/report/github.com/marccarre/promrus">
-		<img src="https://goreportcard.com/badge/github.com/marccarre/promrus&x=1"/>
+		<img src="https://goreportcard.com/badge/github.com/marccarre/promrus"/>
 	</a>
 	<a href="LICENSE">
 		<img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"/>
