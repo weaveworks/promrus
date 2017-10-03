@@ -1,3 +1,21 @@
+<p align="center">
+	<a href="https://github.com/marccarre/promrus/releases/latest">
+		<img src="https://img.shields.io/github/release/marccarre/promrus.svg"/>
+	</a>
+	<a href="https://travis-ci.org/marccarre/promrus">
+		<img src="https://img.shields.io/travis/marccarre/promrus.svg"/>
+	</a>
+	<a href="https://coveralls.io/github/marccarre/promrus?branch=master">
+		<img src="https://img.shields.io/coveralls/marccarre/promrus.svg"/>
+	</a>
+	<a href="https://goreportcard.com/report/github.com/marccarre/promrus">
+		<img src="https://goreportcard.com/badge/github.com/marccarre/promrus&x=1"/>
+	</a>
+	<a href="LICENSE">
+		<img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"/>
+	</a>
+</p>
+
 # promrus
 Logrus hook to expose the number of log messages as Prometheus metrics:
 ```
