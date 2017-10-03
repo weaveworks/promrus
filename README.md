@@ -1,5 +1,11 @@
 # promrus
-Logrus hook to expose Prometheus metrics.
+Logrus hook to expose the number of log messages as Prometheus metrics:
+```
+log_messages{level="debug"}
+log_messages{level="info"}
+log_messages{level="warning"}
+log_messages{level="error"}
+```
 
 ## Usage
 ```
