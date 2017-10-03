@@ -17,14 +17,13 @@ import (
 )
 
 const (
-	appName  string = "test"
 	addr     string = ":8080"
 	endpoint string = "/metrics"
 )
 
 func TestExposeAndQueryLogrusCounters(t *testing.T) {
 	// Create Prometheus hook and configure logrus to use it:
-	hook, err := promrus.NewPrometheusHook(appName)
+	hook, err := promrus.NewPrometheusHook()
 	assert.Nil(t, err)
 	log.AddHook(hook)
 	log.SetLevel(logrus.DebugLevel)
@@ -91,7 +90,7 @@ func countFor(t *testing.T, level logrus.Level, lines []string) int {
 	//   # HELP test_debug Number of log statements at debug level.
 	//   # TYPE test_debug counter
 	//   test_debug 0
-	metric := fmt.Sprintf("%v_%v", appName, level)
+	metric := fmt.Sprintf("log_messages{level=\"%v\"}", level)
 	for _, line := range lines {
 		items := strings.Split(line, " ")
 		if len(items) != 2 { // e.g. {"test_debug", "0"}
