@@ -26,11 +26,63 @@ log_messages{level="error"}
 ```
 
 ## Usage
+
+Sample code:
 ```
-hook, err := promrus.NewPrometheusHook(appName)
-if err != nil {
+package main
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	log "github.com/sirupsen/logrus"
+	"github.com/weaveworks/promrus"
+)
+
+func main() {
+	// Create the Prometheus hook:
+	hook, err := promrus.NewPrometheusHook()
+	if err != nil {
+		return
+	}
+
+	// Configure logrus to use the Prometheus hook:
 	log.AddHook(hook)
+
+	// Expose Prometheus metrics via HTTP, as you usually would:
+	go http.ListenAndServe(":8080", promhttp.Handler())
+
+	// Log with logrus, as you usually would.
+	// Every time the program generates a log message, a Prometheus counter is incremented for the corresponding level.
+	for {
+		log.Infof("foo")
+		time.Sleep(1 * time.Second)
+	}
 }
+```
+
+Run the above program:
+```
+$ go get -u github.com/golang/dep/cmd/dep
+$ dep ensure
+$ go run main.go
+INFO[0000] foo
+INFO[0001] foo
+INFO[0002] foo
+[...]
+INFO[0042] foo
+```
+
+Scrape the Prometheus metrics exposed by the hook:
+```
+$ curl -fsS localhost:8080 | grep log_messages
+# HELP log_messages Total number of log messages.
+# TYPE log_messages counter
+log_messages{level="debug"} 0
+log_messages{level="error"} 0
+log_messages{level="info"} 42
+log_messages{level="warning"} 0
 ```
 
 ## Setup development environment
@@ -47,10 +99,10 @@ $ go build
 ## Test
 ```
 $ go test
-DEBU[0000] this is at debug level!                      
-INFO[0000] this is at info level!                       
-WARN[0000] this is at warning level!                    
-ERRO[0000] this is at error level!                      
+DEBU[0000] this is at debug level!
+INFO[0000] this is at info level!
+WARN[0000] this is at warning level!
+ERRO[0000] this is at error level!
 PASS
 ok  	github.com/weaveworks/promrus	0.011s
 ```
