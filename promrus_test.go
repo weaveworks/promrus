@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/marccarre/promrus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/weaveworks/promrus"
 )
 
 const (

@@ -1,15 +1,15 @@
 <p align="center">
-	<a href="https://github.com/marccarre/promrus/releases/latest">
-		<img src="https://img.shields.io/github/release/marccarre/promrus.svg"/>
+	<a href="https://github.com/weaveworks/promrus/releases/latest">
+		<img src="https://img.shields.io/github/release/weaveworks/promrus.svg"/>
 	</a>
-	<a href="https://travis-ci.org/marccarre/promrus">
-		<img src="https://img.shields.io/travis/marccarre/promrus.svg"/>
+	<a href="https://travis-ci.org/weaveworks/promrus">
+		<img src="https://img.shields.io/travis/weaveworks/promrus.svg"/>
 	</a>
-	<a href="https://coveralls.io/github/marccarre/promrus?branch=master">
-		<img src="https://img.shields.io/coveralls/marccarre/promrus.svg"/>
+	<a href="https://coveralls.io/github/weaveworks/promrus?branch=master">
+		<img src="https://img.shields.io/coveralls/weaveworks/promrus.svg"/>
 	</a>
-	<a href="https://goreportcard.com/report/github.com/marccarre/promrus">
-		<img src="https://goreportcard.com/badge/github.com/marccarre/promrus"/>
+	<a href="https://goreportcard.com/report/github.com/weaveworks/promrus">
+		<img src="https://goreportcard.com/badge/github.com/weaveworks/promrus"/>
 	</a>
 	<a href="LICENSE">
 		<img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"/>
@@ -52,5 +52,5 @@ INFO[0000] this is at info level!
 WARN[0000] this is at warning level!                    
 ERRO[0000] this is at error level!                      
 PASS
-ok  	github.com/marccarre/promrus	0.011s
+ok  	github.com/weaveworks/promrus	0.011s
 ```
