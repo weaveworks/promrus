@@ -1,8 +1,8 @@
 package promrus
 
 import (
+	"github.com/Sirupsen/logrus"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/sirupsen/logrus"
 )
 
 // PrometheusHook exposes Prometheus counters for each of logrus' log levels.
