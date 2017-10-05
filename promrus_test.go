@@ -23,8 +23,7 @@ const (
 
 func TestExposeAndQueryLogrusCounters(t *testing.T) {
 	// Create Prometheus hook and configure logrus to use it:
-	hook, err := promrus.NewPrometheusHook()
-	assert.Nil(t, err)
+	hook := promrus.MustNewPrometheusHook()
 	log.AddHook(hook)
 	log.SetLevel(log.DebugLevel)
 
