@@ -24,6 +24,9 @@ func NewPrometheusHook() (*PrometheusHook, error) {
 	for _, level := range supportedLevels {
 		counterVec.WithLabelValues(level.String()).Set(0)
 	}
+	// Try to unregister the counter vector, in case already registered for some reason,
+	// e.g. double initialisation/configuration done by mistake by the end-user.
+	prometheus.Unregister(counterVec)
 	// Try to register the counter vector:
 	err := prometheus.Register(counterVec)
 	if err != nil {

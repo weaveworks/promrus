@@ -21,6 +21,26 @@ const (
 	endpoint string = "/metrics"
 )
 
+func TestRegisteringHookMultipleTimesShouldBeSafe(t *testing.T) {
+	log.AddHook(promrus.MustNewPrometheusHook())
+	log.AddHook(promrus.MustNewPrometheusHook()) // Initialising twice in a row should NOT raise any error.
+
+	httpServePrometheusMetrics(t)
+
+	lines := httpGetMetrics(t)
+	assert.Equal(t, 0, countFor(t, log.InfoLevel, lines))
+
+	log.Info("this is at info level!")
+
+	lines = httpGetMetrics(t)
+	assert.Equal(t, 1, countFor(t, log.InfoLevel, lines))
+
+	log.AddHook(promrus.MustNewPrometheusHook()) // Initialising again here should NOT raise any error, but will reset counters.
+
+	lines = httpGetMetrics(t)
+	assert.Equal(t, 0, countFor(t, log.InfoLevel, lines))
+}
+
 func TestExposeAndQueryLogrusCounters(t *testing.T) {
 	// Create Prometheus hook and configure logrus to use it:
 	hook := promrus.MustNewPrometheusHook()
