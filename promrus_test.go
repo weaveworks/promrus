@@ -3,7 +3,6 @@ package promrus_test
 import (
 	"fmt"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -25,7 +24,7 @@ func TestRegisteringHookMultipleTimesShouldBeSafe(t *testing.T) {
 	log.AddHook(promrus.MustNewPrometheusHook())
 	log.AddHook(promrus.MustNewPrometheusHook()) // Initialising twice in a row should NOT raise any error.
 
-	httpServePrometheusMetrics(t)
+	server := httpServePrometheusMetrics(t)
 
 	lines := httpGetMetrics(t)
 	assert.Equal(t, 0, countFor(t, log.InfoLevel, lines))
@@ -39,6 +38,8 @@ func TestRegisteringHookMultipleTimesShouldBeSafe(t *testing.T) {
 
 	lines = httpGetMetrics(t)
 	assert.Equal(t, 0, countFor(t, log.InfoLevel, lines))
+
+	server.Close()
 }
 
 func TestExposeAndQueryLogrusCounters(t *testing.T) {
@@ -47,7 +48,7 @@ func TestExposeAndQueryLogrusCounters(t *testing.T) {
 	log.AddHook(hook)
 	log.SetLevel(log.DebugLevel)
 
-	httpServePrometheusMetrics(t)
+	server := httpServePrometheusMetrics(t)
 
 	lines := httpGetMetrics(t)
 	assert.Equal(t, 0, countFor(t, log.DebugLevel, lines))
@@ -82,14 +83,18 @@ func TestExposeAndQueryLogrusCounters(t *testing.T) {
 	assert.Equal(t, 1, countFor(t, log.InfoLevel, lines))
 	assert.Equal(t, 1, countFor(t, log.WarnLevel, lines))
 	assert.Equal(t, 1, countFor(t, log.ErrorLevel, lines))
+
+	server.Close()
 }
 
 // httpServePrometheusMetrics exposes the Prometheus metrics over HTTP, in a different go routine.
-func httpServePrometheusMetrics(t *testing.T) {
-	http.Handle(endpoint, promhttp.Handler())
-	listener, err := net.Listen("tcp", addr)
-	assert.Nil(t, err)
-	go http.Serve(listener, nil)
+func httpServePrometheusMetrics(t *testing.T) *http.Server {
+	server := &http.Server{
+		Addr:    addr,
+		Handler: promhttp.Handler(),
+	}
+	go server.ListenAndServe()
+	return server
 }
 
 // httpGetMetrics queries the local HTTP server for the exposed metrics and parses the response.
