@@ -28,7 +28,7 @@ log_messages{level="error"}
 ## Usage
 
 Sample code:
-```
+```go
 package main
 
 import (
