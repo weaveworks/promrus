@@ -114,7 +114,7 @@ func countFor(t *testing.T, level log.Level, lines []string) int {
 	//   # HELP test_debug Number of log statements at debug level.
 	//   # TYPE test_debug counter
 	//   test_debug 0
-	metric := fmt.Sprintf("log_messages{level=\"%v\"}", level)
+	metric := fmt.Sprintf("log_messages_total{level=\"%v\"}", level)
 	for _, line := range lines {
 		items := strings.Split(line, " ")
 		if len(items) != 2 { // e.g. {"test_debug", "0"}

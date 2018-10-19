@@ -17,7 +17,7 @@ var supportedLevels = []logrus.Level{logrus.DebugLevel, logrus.InfoLevel, logrus
 // Use NewPrometheusHook if you want more control. Use MustNewPrometheusHook if you want a less verbose hook creation.
 func NewPrometheusHook() (*PrometheusHook, error) {
 	counterVec := prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "log_messages",
+		Name: "log_messages_total",
 		Help: "Total number of log messages.",
 	}, []string{"level"})
 	// Initialise counters for all supported levels:
