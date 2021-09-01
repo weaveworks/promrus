@@ -87,6 +87,54 @@ func TestExposeAndQueryLogrusCounters(t *testing.T) {
 	server.Close()
 }
 
+func TestForLevels(t *testing.T) {
+	// Create Prometheus hook and configure logrus to use it:
+	hook := promrus.MustNewPrometheusHook(promrus.ForLevels(log.InfoLevel, log.WarnLevel))
+	log.AddHook(hook)
+	log.SetLevel(log.DebugLevel)
+
+	server := httpServePrometheusMetrics(t)
+
+	lines := httpGetMetrics(t)
+	assert.True(t, notFound(t, log.DebugLevel, lines))
+	assert.Equal(t, 0, countFor(t, log.InfoLevel, lines))
+	assert.Equal(t, 0, countFor(t, log.WarnLevel, lines))
+	assert.True(t, notFound(t, log.ErrorLevel, lines))
+
+
+	log.Debug("this is at debug level!")
+	lines = httpGetMetrics(t)
+	assert.True(t, notFound(t, log.DebugLevel, lines))
+	assert.Equal(t, 0, countFor(t, log.InfoLevel, lines))
+	assert.Equal(t, 0, countFor(t, log.WarnLevel, lines))
+	assert.True(t, notFound(t, log.ErrorLevel, lines))
+
+
+	log.Info("this is at info level!")
+	lines = httpGetMetrics(t)
+	assert.True(t, notFound(t, log.DebugLevel, lines))
+	assert.Equal(t, 1, countFor(t, log.InfoLevel, lines))
+	assert.Equal(t, 0, countFor(t, log.WarnLevel, lines))
+	assert.True(t, notFound(t, log.ErrorLevel, lines))
+
+
+	log.Warn("this is at warning level!")
+	lines = httpGetMetrics(t)
+	assert.True(t, notFound(t, log.DebugLevel, lines))
+	assert.Equal(t, 1, countFor(t, log.InfoLevel, lines))
+	assert.Equal(t, 1, countFor(t, log.WarnLevel, lines))
+	assert.True(t, notFound(t, log.ErrorLevel, lines))
+
+	log.Error("this is at error level!")
+	lines = httpGetMetrics(t)
+	assert.True(t, notFound(t, log.DebugLevel, lines))
+	assert.Equal(t, 1, countFor(t, log.InfoLevel, lines))
+	assert.Equal(t, 1, countFor(t, log.WarnLevel, lines))
+	assert.True(t, notFound(t, log.ErrorLevel, lines))
+
+	server.Close()
+}
+
 // httpServePrometheusMetrics exposes the Prometheus metrics over HTTP, in a different go routine.
 func httpServePrometheusMetrics(t *testing.T) *http.Server {
 	server := &http.Server{
@@ -127,4 +175,23 @@ func countFor(t *testing.T, level log.Level, lines []string) int {
 		}
 	}
 	panic(fmt.Sprintf("Could not find %v in %v", metric, lines))
+}
+
+// notFound is a helper function that says whether a given counter is not found.
+func notFound(t *testing.T, level log.Level, lines []string) bool {
+	// Metrics are exposed as per the below example:
+	//   # HELP test_debug Number of log statements at debug level.
+	//   # TYPE test_debug counter
+	//   test_debug 0
+	metric := fmt.Sprintf("log_messages_total{level=\"%v\"}", level)
+	for _, line := range lines {
+		items := strings.Split(line, " ")
+		if len(items) != 2 { // e.g. {"test_debug", "0"}
+			continue
+		}
+		if items[0] == metric {
+			return false
+		}
+	}
+	return true
 }

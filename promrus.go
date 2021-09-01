@@ -7,15 +7,20 @@ import (
 
 // PrometheusHook exposes Prometheus counters for each of logrus' log levels.
 type PrometheusHook struct {
+	supportedLevels []logrus.Level
 	counterVec *prometheus.CounterVec
 }
-
-var supportedLevels = []logrus.Level{logrus.DebugLevel, logrus.InfoLevel, logrus.WarnLevel, logrus.ErrorLevel}
 
 // NewPrometheusHook creates a new instance of PrometheusHook which exposes Prometheus counters for various log levels.
 // Contrarily to MustNewPrometheusHook, it returns an error to the caller in case of issue.
 // Use NewPrometheusHook if you want more control. Use MustNewPrometheusHook if you want a less verbose hook creation.
-func NewPrometheusHook() (*PrometheusHook, error) {
+func NewPrometheusHook(opts ...Option) (*PrometheusHook, error) {
+	optStruct := newDefaultOptions()
+	for _, opt := range opts {
+		opt(&optStruct)
+	}
+	supportedLevels := optStruct.levels
+
 	counterVec := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "log_messages_total",
 		Help: "Total number of log messages.",
@@ -32,7 +37,9 @@ func NewPrometheusHook() (*PrometheusHook, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &PrometheusHook{
+		supportedLevels: supportedLevels,
 		counterVec: counterVec,
 	}, nil
 }
@@ -40,8 +47,8 @@ func NewPrometheusHook() (*PrometheusHook, error) {
 // MustNewPrometheusHook creates a new instance of PrometheusHook which exposes Prometheus counters for various log levels.
 // Contrarily to NewPrometheusHook, it does not return any error to the caller, but panics instead.
 // Use MustNewPrometheusHook if you want a less verbose hook creation. Use NewPrometheusHook if you want more control.
-func MustNewPrometheusHook() *PrometheusHook {
-	hook, err := NewPrometheusHook()
+func MustNewPrometheusHook(opts ...Option) *PrometheusHook {
+	hook, err := NewPrometheusHook(opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -57,5 +64,5 @@ func (hook *PrometheusHook) Fire(entry *logrus.Entry) error {
 // Levels returns all supported log levels, i.e.: Debug, Info, Warn and Error, as
 // there is no point incrementing a counter just before exiting/panicking.
 func (hook *PrometheusHook) Levels() []logrus.Level {
-	return supportedLevels
+	return hook.supportedLevels
 }
