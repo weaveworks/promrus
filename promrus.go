@@ -10,7 +10,7 @@ type PrometheusHook struct {
 	counterVec *prometheus.CounterVec
 }
 
-var supportedLevels = []logrus.Level{logrus.DebugLevel, logrus.InfoLevel, logrus.WarnLevel, logrus.ErrorLevel}
+var supportedLevels = logrus.AllLevels
 
 // NewPrometheusHook creates a new instance of PrometheusHook which exposes Prometheus counters for various log levels.
 // Contrarily to MustNewPrometheusHook, it returns an error to the caller in case of issue.
